@@ -1,12 +1,19 @@
-import React from "react";
 import LeaveDashboardCard from "../../components/leave/LeaveDashboardCard";
 
-const LeaveManagement: React.FC = () => {
+const LeaveManagement = () => {
   return (
     <div className="min-h-full bg-slate-50 p-6">
       <div className="mx-auto max-w-7xl">
         {/* Header */}
-        <div className="mb-8 rounded-2xl bg-slate-900 px-8 py-10 text-white shadow-lg">
+        <div
+          className="
+            mb-8 rounded-2xl
+            bg-slate-900
+            px-8 py-10
+            text-white
+            shadow-lg
+          "
+        >
           <h1 className="text-3xl font-bold">Leave Management</h1>
 
           <p className="mt-2 text-slate-300">
@@ -14,7 +21,7 @@ const LeaveManagement: React.FC = () => {
           </p>
         </div>
 
-        {/* Cards */}
+        {/* Leave Modules */}
         <div className="grid gap-6 md:grid-cols-2">
           <LeaveDashboardCard
             title="Leave Request"

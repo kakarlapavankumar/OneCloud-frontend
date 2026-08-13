@@ -1,222 +1,237 @@
-import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import {
+  ArrowLeft,
+  User,
+  Mail,
+  Phone,
+  CalendarDays,
+  Briefcase,
+  FileText,
+} from "lucide-react";
 
-import { useLeave } from "../../hooks/useLeave";
+interface LeaveHistory {
+  type: string;
+  from: string;
+  to: string;
+  days: number;
+  status: "Approved" | "Pending" | "Rejected";
+}
 
-const EmployeeLeaveProfile = () => {
-  const { employeeId } = useParams<{
-    employeeId: string;
-  }>();
+const employee = {
+  id: "EMP001",
+  name: "Pavan Kumar",
+  department: "IT",
+  designation: "Java Developer",
+  email: "pavan@gmail.com",
+  phone: "+91 9876543210",
+  joiningDate: "10 January 2025",
+  attendance: 92,
+  leaveBalance: 15,
+};
 
-  const { getEmployeeLeaves, getEmployeeBalance } = useLeave();
+const leaveHistory: LeaveHistory[] = [
+  {
+    type: "Casual Leave",
+    from: "10 Jun 2026",
+    to: "11 Jun 2026",
+    days: 2,
+    status: "Approved",
+  },
+  {
+    type: "Sick Leave",
+    from: "20 May 2026",
+    to: "20 May 2026",
+    days: 1,
+    status: "Approved",
+  },
+  {
+    type: "Earned Leave",
+    from: "15 Aug 2026",
+    to: "17 Aug 2026",
+    days: 3,
+    status: "Pending",
+  },
+];
 
-  const id = employeeId || "EMP001";
-
-  const employeeLeaves = getEmployeeLeaves(id);
-
-  const balance = getEmployeeBalance(id);
-
-  const employee = employeeLeaves[0];
-
-  const totalRequests = employeeLeaves.length;
-
-  const approved = employeeLeaves.filter(
-    (leave) => leave.status === "Approved",
-  ).length;
-
-  const pending = employeeLeaves.filter(
-    (leave) => leave.status === "Pending",
-  ).length;
-
-  const rejected = employeeLeaves.filter(
-    (leave) => leave.status === "Rejected",
-  ).length;
-
-  if (!employee) {
-    return (
-      <div className="min-h-full bg-slate-50 p-6">
-        <div className="rounded-xl border border-slate-200 bg-white p-12 text-center">
-          <h1 className="text-xl font-bold text-slate-900">
-            Employee Not Found
-          </h1>
-
-          <p className="mt-2 text-sm text-slate-500">
-            No leave information is available for employee {id}.
-          </p>
-        </div>
-      </div>
-    );
-  }
+export default function EmployeeLeaveProfile() {
+  const navigate = useNavigate();
 
   return (
-    <div className="min-h-full bg-slate-50 p-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">
-          Employee Leave Profile
-        </h1>
+    <div className="min-h-screen bg-slate-50 p-6">
+      {/* HEADER */}
+      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-800">
+            Employee Leave Profile
+          </h1>
 
-        <p className="mt-1 text-sm text-slate-500">
-          Leave balance, statistics and history.
-        </p>
+          <p className="mt-1 text-sm text-slate-500">
+            Employee details, attendance and leave information
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => navigate("/leave")}
+          className="flex w-fit items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md transition hover:bg-blue-700"
+        >
+          <ArrowLeft size={18} />
+          Back to Dashboard
+        </button>
       </div>
 
-      {/* EMPLOYEE */}
-
-      <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="flex items-center gap-5">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-blue-100 text-xl font-bold text-blue-700">
-            {employee.employeeName.charAt(0)}
+      {/* PROFILE */}
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex flex-col gap-5 md:flex-row md:items-center">
+          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+            <User size={38} />
           </div>
 
           <div>
-            <h2 className="text-xl font-bold text-slate-900">
-              {employee.employeeName}
+            <h2 className="text-2xl font-bold text-slate-800">
+              {employee.name}
             </h2>
 
-            <p className="mt-1 text-sm text-slate-500">
-              {employee.employeeId} • {employee.department}
+            <p className="mt-1 text-slate-500">{employee.designation}</p>
+
+            <span className="mt-2 inline-block rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-700">
+              Active
+            </span>
+          </div>
+        </div>
+
+        {/* EMPLOYEE DETAILS */}
+        <div className="mt-7 grid gap-5 border-t border-slate-100 pt-7 md:grid-cols-2 lg:grid-cols-3">
+          <Detail
+            icon={<User size={18} />}
+            label="Employee ID"
+            value={employee.id}
+          />
+
+          <Detail
+            icon={<Briefcase size={18} />}
+            label="Department"
+            value={employee.department}
+          />
+
+          <Detail
+            icon={<Briefcase size={18} />}
+            label="Designation"
+            value={employee.designation}
+          />
+
+          <Detail
+            icon={<Mail size={18} />}
+            label="Email"
+            value={employee.email}
+          />
+
+          <Detail
+            icon={<Phone size={18} />}
+            label="Phone Number"
+            value={employee.phone}
+          />
+
+          <Detail
+            icon={<CalendarDays size={18} />}
+            label="Joining Date"
+            value={employee.joiningDate}
+          />
+        </div>
+      </div>
+
+      {/* REPORT CARDS */}
+      <div className="mt-6 grid gap-5 md:grid-cols-3">
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <p className="text-sm text-slate-500">Attendance Percentage</p>
+
+          <p className="mt-2 text-3xl font-bold text-green-600">
+            {employee.attendance}%
+          </p>
+        </div>
+
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <p className="text-sm text-slate-500">Leave Balance</p>
+
+          <p className="mt-2 text-3xl font-bold text-blue-600">
+            {employee.leaveBalance}
+          </p>
+
+          <p className="mt-1 text-xs text-slate-500">Days remaining</p>
+        </div>
+
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <p className="text-sm text-slate-500">Total Leave Requests</p>
+
+          <p className="mt-2 text-3xl font-bold text-purple-600">
+            {leaveHistory.length}
+          </p>
+        </div>
+      </div>
+
+      {/* LEAVE HISTORY */}
+      <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="flex items-center gap-3 border-b border-slate-200 p-5">
+          <div className="rounded-xl bg-blue-50 p-2 text-blue-600">
+            <FileText size={22} />
+          </div>
+
+          <div>
+            <h2 className="font-bold text-slate-800">Leave History</h2>
+
+            <p className="text-sm text-slate-500">
+              Previous and current leave requests
             </p>
-
-            <p className="text-sm text-slate-500">{employee.designation}</p>
           </div>
-        </div>
-      </div>
-
-      {/* BALANCE */}
-
-      <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-3">
-        <div className="rounded-xl border border-blue-200 bg-blue-50 p-6">
-          <p className="text-sm text-blue-700">Total Entitlement</p>
-
-          <p className="mt-2 text-3xl font-bold text-blue-900">
-            {balance.totalEntitlement}
-          </p>
-
-          <p className="mt-1 text-xs text-blue-600">Days</p>
-        </div>
-
-        <div className="rounded-xl border border-orange-200 bg-orange-50 p-6">
-          <p className="text-sm text-orange-700">Approved Leave</p>
-
-          <p className="mt-2 text-3xl font-bold text-orange-900">
-            {balance.approvedDays}
-          </p>
-
-          <p className="mt-1 text-xs text-orange-600">Days used</p>
-        </div>
-
-        <div className="rounded-xl border border-green-200 bg-green-50 p-6">
-          <p className="text-sm text-green-700">Remaining Leave</p>
-
-          <p className="mt-2 text-3xl font-bold text-green-900">
-            {balance.remainingDays}
-          </p>
-
-          <p className="mt-1 text-xs text-green-600">Days available</p>
-        </div>
-      </div>
-
-      {/* STATISTICS */}
-
-      <div className="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-slate-900">
-          Leave Statistics
-        </h2>
-
-        <div className="mt-5 grid grid-cols-2 gap-4 md:grid-cols-4">
-          <div className="rounded-lg bg-slate-50 p-4">
-            <p className="text-sm text-slate-500">Total Requests</p>
-
-            <p className="mt-2 text-2xl font-bold text-slate-900">
-              {totalRequests}
-            </p>
-          </div>
-
-          <div className="rounded-lg bg-green-50 p-4">
-            <p className="text-sm text-green-600">Approved</p>
-
-            <p className="mt-2 text-2xl font-bold text-green-800">{approved}</p>
-          </div>
-
-          <div className="rounded-lg bg-amber-50 p-4">
-            <p className="text-sm text-amber-600">Pending</p>
-
-            <p className="mt-2 text-2xl font-bold text-amber-800">{pending}</p>
-          </div>
-
-          <div className="rounded-lg bg-red-50 p-4">
-            <p className="text-sm text-red-600">Rejected</p>
-
-            <p className="mt-2 text-2xl font-bold text-red-800">{rejected}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* HISTORY */}
-
-      <div className="mt-6 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-        <div className="border-b border-slate-200 px-6 py-5">
-          <h2 className="text-lg font-semibold text-slate-900">
-            Leave History
-          </h2>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[800px]">
+          <table className="w-full">
             <thead className="bg-slate-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase text-slate-500">
+                <th className="px-5 py-4 text-left text-sm font-semibold text-slate-600">
                   Leave Type
                 </th>
 
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase text-slate-500">
+                <th className="px-5 py-4 text-left text-sm font-semibold text-slate-600">
                   From
                 </th>
 
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase text-slate-500">
+                <th className="px-5 py-4 text-left text-sm font-semibold text-slate-600">
                   To
                 </th>
 
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase text-slate-500">
+                <th className="px-5 py-4 text-left text-sm font-semibold text-slate-600">
                   Days
                 </th>
 
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase text-slate-500">
+                <th className="px-5 py-4 text-left text-sm font-semibold text-slate-600">
                   Status
                 </th>
               </tr>
             </thead>
 
             <tbody>
-              {employeeLeaves.map((leave) => (
-                <tr key={leave.id} className="border-t border-slate-100">
-                  <td className="px-6 py-4 text-sm font-medium text-slate-800">
-                    {leave.leaveType}
+              {leaveHistory.map((leave, index) => (
+                <tr key={index} className="border-t border-slate-100">
+                  <td className="px-5 py-4 text-sm font-semibold text-slate-800">
+                    {leave.type}
                   </td>
 
-                  <td className="px-6 py-4 text-sm text-slate-600">
-                    {leave.fromDate}
+                  <td className="px-5 py-4 text-sm text-slate-600">
+                    {leave.from}
                   </td>
 
-                  <td className="px-6 py-4 text-sm text-slate-600">
-                    {leave.toDate}
+                  <td className="px-5 py-4 text-sm text-slate-600">
+                    {leave.to}
                   </td>
 
-                  <td className="px-6 py-4 text-sm font-semibold text-slate-800">
-                    {leave.totalDays}
+                  <td className="px-5 py-4 text-sm text-slate-600">
+                    {leave.days}
                   </td>
 
-                  <td className="px-6 py-4">
-                    <span
-                      className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                        leave.status === "Approved"
-                          ? "bg-green-50 text-green-700"
-                          : leave.status === "Rejected"
-                            ? "bg-red-50 text-red-700"
-                            : "bg-amber-50 text-amber-700"
-                      }`}
-                    >
-                      {leave.status}
-                    </span>
+                  <td className="px-5 py-4">
+                    <StatusBadge status={leave.status} />
                   </td>
                 </tr>
               ))}
@@ -226,6 +241,42 @@ const EmployeeLeaveProfile = () => {
       </div>
     </div>
   );
-};
+}
 
-export default EmployeeLeaveProfile;
+function Detail({
+  icon,
+  label,
+  value,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="flex items-start gap-3">
+      <div className="mt-0.5 text-blue-600">{icon}</div>
+
+      <div>
+        <p className="text-xs font-medium text-slate-500">{label}</p>
+
+        <p className="mt-1 text-sm font-semibold text-slate-800">{value}</p>
+      </div>
+    </div>
+  );
+}
+
+function StatusBadge({ status }: { status: LeaveHistory["status"] }) {
+  const styles = {
+    Approved: "bg-green-50 text-green-700 border-green-200",
+    Pending: "bg-yellow-50 text-yellow-700 border-yellow-200",
+    Rejected: "bg-red-50 text-red-700 border-red-200",
+  };
+
+  return (
+    <span
+      className={`rounded-full border px-3 py-1 text-xs font-semibold ${styles[status]}`}
+    >
+      {status}
+    </span>
+  );
+}

@@ -13,36 +13,29 @@ import EmployeeDetailsPage from "../pages/employee/EmployeeDetailsPage";
 
 import Attendance from "../pages/attendance/Attendance";
 
+import LeaveManagement from "../pages/leave/LeaveManagement";
+import LeaveRequestDashboard from "../pages/leave/LeaveRequestDashboard";
+import LeaveApprovalDashboard from "../pages/leave/LeaveApprovalDashboard";
+import HRLeaveDashboard from "../pages/leave/HRLeaveDashboard";
+import EmployeeLeaveProfile from "../pages/leave/EmployeeLeaveProfile";
+
 import Placeholder from "../pages/Placeholder";
 
 import DashboardLayout from "../components/layout/DashboardLayout";
 
-import HRLeaveDashboard from "../pages/leave/HRLeaveDashboard";
-
-import LeaveRequestDashboard from "../pages/leave/LeaveRequestDashboard";
-
-import LeaveApprovalDashboard from "../pages/leave/LeaveApprovalDashboard";
-
-import EmployeeLeaveProfile from "../pages/leave/EmployeeLeaveProfile";
-
 export default function AppRoutes() {
   return (
     <Routes>
+      {/* PUBLIC */}
       <Route path="/" element={<LandingPage />} />
 
       <Route path="/login" element={<Login />} />
 
       <Route path="/register" element={<Register />} />
 
+      {/* PROTECTED */}
       <Route element={<ProtectedRoutes />}>
-        <Route
-          element={
-            <DashboardLayout>
-              <></>
-            </DashboardLayout>
-          }
-        />
-
+        {/* DASHBOARD */}
         <Route
           path="/dashboard"
           element={
@@ -52,6 +45,7 @@ export default function AppRoutes() {
           }
         />
 
+        {/* EMPLOYEES */}
         <Route
           path="/employees"
           element={
@@ -70,6 +64,7 @@ export default function AppRoutes() {
           }
         />
 
+        {/* ATTENDANCE */}
         <Route
           path="/attendance"
           element={
@@ -79,28 +74,65 @@ export default function AppRoutes() {
           }
         />
 
+        {/* ========================= */}
+        {/* LEAVE MANAGEMENT */}
+        {/* ========================= */}
+
         <Route
           path="/leave"
           element={
             <DashboardLayout>
-              <Placeholder
-                title="Leave Management"
-                description="Leave management module."
-              />
+              <LeaveManagement />
             </DashboardLayout>
           }
         />
 
-        <Route path="/leave/request" element={<LeaveRequestDashboard />} />
+        <Route
+          path="/leave/request"
+          element={
+            <DashboardLayout>
+              <LeaveRequestDashboard />
+            </DashboardLayout>
+          }
+        />
 
-        <Route path="/leave/approval" element={<LeaveApprovalDashboard />} />
+        <Route
+          path="/leave/approval"
+          element={
+            <DashboardLayout>
+              <LeaveApprovalDashboard />
+            </DashboardLayout>
+          }
+        />
 
-        <Route path="/leave/hr-dashboard" element={<HRLeaveDashboard />} />
+        <Route
+          path="/leave/hr-dashboard"
+          element={
+            <DashboardLayout>
+              <HRLeaveDashboard />
+            </DashboardLayout>
+          }
+        />
 
         <Route
           path="/leave/employee-profile"
-          element={<EmployeeLeaveProfile />}
+          element={
+            <DashboardLayout>
+              <EmployeeLeaveProfile />
+            </DashboardLayout>
+          }
         />
+
+        <Route
+          path="/leave/employee-profile/:employeeId"
+          element={
+            <DashboardLayout>
+              <EmployeeLeaveProfile />
+            </DashboardLayout>
+          }
+        />
+
+        {/* OTHER MODULES */}
 
         <Route
           path="/payroll"
@@ -162,6 +194,7 @@ export default function AppRoutes() {
           }
         />
 
+        {/* PROFILE */}
         <Route
           path="/profile"
           element={
@@ -172,6 +205,7 @@ export default function AppRoutes() {
         />
       </Route>
 
+      {/* 404 */}
       <Route path="*" element={<NavigateToDashboard />} />
     </Routes>
   );
@@ -180,7 +214,13 @@ export default function AppRoutes() {
 function NavigateToDashboard() {
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <p>Page not found.</p>
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-slate-900">Page Not Found</h1>
+
+        <p className="mt-2 text-slate-500">
+          The page you are looking for does not exist.
+        </p>
+      </div>
     </div>
   );
 }

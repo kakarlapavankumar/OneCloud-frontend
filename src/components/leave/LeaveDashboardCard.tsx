@@ -1,36 +1,52 @@
-import React from "react";
+import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 
 interface LeaveDashboardCardProps {
   title: string;
   description: string;
   to: string;
-  icon?: React.ReactNode;
+  icon?: ReactNode;
 }
 
-const LeaveDashboardCard: React.FC<LeaveDashboardCardProps> = ({
+const LeaveDashboardCard = ({
   title,
   description,
   to,
   icon,
-}) => {
+}: LeaveDashboardCardProps) => {
   return (
     <Link
       to={to}
       className="
-        group block rounded-2xl bg-white p-6
-        shadow-sm ring-1 ring-slate-200
+        group block rounded-2xl
+        bg-white p-6
+        shadow-sm
+        ring-1 ring-slate-200
         transition-all duration-200
         hover:-translate-y-1
-        hover:shadow-lg
+        hover:shadow-xl
         hover:ring-blue-300
       "
     >
-      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+      <div
+        className="
+          mb-5 flex h-14 w-14
+          items-center justify-center
+          rounded-xl
+          bg-blue-50
+          text-blue-600
+        "
+      >
         {icon}
       </div>
 
-      <h2 className="text-xl font-bold text-slate-900 group-hover:text-blue-600">
+      <h2
+        className="
+          text-xl font-bold
+          text-slate-900
+          group-hover:text-blue-600
+        "
+      >
         {title}
       </h2>
 

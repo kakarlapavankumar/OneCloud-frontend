@@ -1,190 +1,202 @@
-import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  ArrowLeft,
+  Users,
+  UserCheck,
+  CalendarDays,
+  Clock,
+  Building2,
+  Activity,
+} from "lucide-react";
 
-import { useLeave } from "../../hooks/useLeave";
+export default function HRLeaveDashboard() {
+  const navigate = useNavigate();
 
-const HRLeaveDashboard = () => {
-  const { leaveRequests } = useLeave();
-
-  const statistics = useMemo(() => {
-    return {
-      total: leaveRequests.length,
-
-      pending: leaveRequests.filter((leave) => leave.status === "Pending")
-        .length,
-
-      approved: leaveRequests.filter((leave) => leave.status === "Approved")
-        .length,
-
-      rejected: leaveRequests.filter((leave) => leave.status === "Rejected")
-        .length,
-    };
-  }, [leaveRequests]);
-
-  const leaveTypes = [
-    "Casual Leave",
-    "Sick Leave",
-    "Earned Leave",
-    "Maternity Leave",
+  const cards = [
+    {
+      title: "Total Employees",
+      value: 15,
+      icon: Users,
+      bg: "bg-blue-50",
+      text: "text-blue-600",
+    },
+    {
+      title: "Present Today",
+      value: 8,
+      icon: UserCheck,
+      bg: "bg-green-50",
+      text: "text-green-600",
+    },
+    {
+      title: "Employees on Leave",
+      value: 2,
+      icon: CalendarDays,
+      bg: "bg-purple-50",
+      text: "text-purple-600",
+    },
+    {
+      title: "Pending Requests",
+      value: 3,
+      icon: Clock,
+      bg: "bg-yellow-50",
+      text: "text-yellow-600",
+    },
+    {
+      title: "Departments",
+      value: 4,
+      icon: Building2,
+      bg: "bg-orange-50",
+      text: "text-orange-600",
+    },
+    {
+      title: "Active Employees",
+      value: 14,
+      icon: Activity,
+      bg: "bg-cyan-50",
+      text: "text-cyan-600",
+    },
   ];
 
   return (
-    <div className="min-h-full bg-slate-50 p-6">
-      <div className="mb-7">
-        <h1 className="text-2xl font-bold text-slate-900">
-          HR Leave Dashboard
-        </h1>
+    <div className="min-h-screen bg-slate-50 p-6">
+      {/* HEADER */}
+      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-800">
+            HR Leave Dashboard
+          </h1>
 
-        <p className="mt-1 text-sm text-slate-500">
-          Monitor organization-wide leave activity and employee leave requests.
-        </p>
+          <p className="mt-1 text-sm text-slate-500">
+            Overview of employees and leave activities
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => navigate("/leave")}
+          className="flex w-fit items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md transition hover:bg-blue-700"
+        >
+          <ArrowLeft size={18} />
+          Back to Dashboard
+        </button>
       </div>
 
-      {/* STATISTICS */}
+      {/* CARDS */}
+      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+        {cards.map((card) => {
+          const Icon = card.icon;
 
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-sm text-slate-500">Total Requests</p>
+          return (
+            <div
+              key={card.title}
+              className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-slate-500">{card.title}</p>
 
-          <h2 className="mt-2 text-3xl font-bold text-slate-900">
-            {statistics.total}
-          </h2>
-        </div>
+                  <p className="mt-2 text-3xl font-bold text-slate-800">
+                    {card.value}
+                  </p>
+                </div>
 
-        <div className="rounded-xl border border-amber-200 bg-amber-50 p-5">
-          <p className="text-sm text-amber-700">Pending</p>
-
-          <h2 className="mt-2 text-3xl font-bold text-amber-800">
-            {statistics.pending}
-          </h2>
-        </div>
-
-        <div className="rounded-xl border border-green-200 bg-green-50 p-5">
-          <p className="text-sm text-green-700">Approved</p>
-
-          <h2 className="mt-2 text-3xl font-bold text-green-800">
-            {statistics.approved}
-          </h2>
-        </div>
-
-        <div className="rounded-xl border border-red-200 bg-red-50 p-5">
-          <p className="text-sm text-red-700">Rejected</p>
-
-          <h2 className="mt-2 text-3xl font-bold text-red-800">
-            {statistics.rejected}
-          </h2>
-        </div>
-      </div>
-
-      {/* LEAVE TYPES */}
-
-      <div className="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-slate-900">
-          Leave Type Statistics
-        </h2>
-
-        <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {leaveTypes.map((type) => {
-            const count = leaveRequests.filter(
-              (leave) => leave.leaveType === type,
-            ).length;
-
-            return (
-              <div
-                key={type}
-                className="rounded-lg border border-slate-200 p-4"
-              >
-                <p className="text-sm text-slate-500">{type}</p>
-
-                <p className="mt-2 text-2xl font-bold text-slate-900">
-                  {count}
-                </p>
-
-                <p className="mt-1 text-xs text-slate-400">Requests</p>
+                <div
+                  className={`flex h-12 w-12 items-center justify-center rounded-xl ${card.bg} ${card.text}`}
+                >
+                  <Icon size={24} />
+                </div>
               </div>
-            );
-          })}
-        </div>
+            </div>
+          );
+        })}
       </div>
 
-      {/* RECENT REQUESTS */}
+      {/* RECENT ACTIVITIES */}
+      <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="border-b border-slate-200 p-5">
+          <h2 className="font-bold text-slate-800">Recent Activities</h2>
 
-      <div className="mt-6 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-        <div className="border-b border-slate-200 px-6 py-5">
-          <h2 className="text-lg font-semibold text-slate-900">
-            Recent Leave Requests
-          </h2>
+          <p className="mt-1 text-sm text-slate-500">
+            Latest HR and leave activities
+          </p>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[900px]">
+          <table className="w-full">
             <thead className="bg-slate-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase text-slate-500">
+                <th className="px-5 py-4 text-left text-sm font-semibold text-slate-600">
+                  Activity
+                </th>
+
+                <th className="px-5 py-4 text-left text-sm font-semibold text-slate-600">
                   Employee
                 </th>
 
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase text-slate-500">
+                <th className="px-5 py-4 text-left text-sm font-semibold text-slate-600">
                   Department
                 </th>
 
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase text-slate-500">
-                  Leave Type
-                </th>
-
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase text-slate-500">
-                  Days
-                </th>
-
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase text-slate-500">
+                <th className="px-5 py-4 text-left text-sm font-semibold text-slate-600">
                   Status
                 </th>
               </tr>
             </thead>
 
             <tbody>
-              {leaveRequests.slice(0, 8).map((leave) => (
-                <tr key={leave.id} className="border-t border-slate-100">
-                  <td className="px-6 py-4">
-                    <p className="font-medium text-slate-900">
-                      {leave.employeeName}
-                    </p>
+              <tr className="border-t border-slate-100">
+                <td className="px-5 py-4 text-sm text-slate-700">
+                  Leave Request
+                </td>
 
-                    <p className="text-xs text-slate-500">{leave.employeeId}</p>
-                  </td>
+                <td className="px-5 py-4 text-sm font-semibold">Pavan Kumar</td>
 
-                  <td className="px-6 py-4 text-sm text-slate-600">
-                    {leave.department}
-                  </td>
+                <td className="px-5 py-4 text-sm">IT</td>
 
-                  <td className="px-6 py-4 text-sm text-slate-600">
-                    {leave.leaveType}
-                  </td>
+                <td className="px-5 py-4">
+                  <span className="rounded-full bg-yellow-50 px-3 py-1 text-xs font-semibold text-yellow-700">
+                    Pending
+                  </span>
+                </td>
+              </tr>
 
-                  <td className="px-6 py-4 text-sm font-semibold text-slate-900">
-                    {leave.totalDays}
-                  </td>
+              <tr className="border-t border-slate-100">
+                <td className="px-5 py-4 text-sm text-slate-700">
+                  Attendance Update
+                </td>
 
-                  <td className="px-6 py-4">
-                    <span
-                      className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                        leave.status === "Approved"
-                          ? "bg-green-50 text-green-700"
-                          : leave.status === "Rejected"
-                            ? "bg-red-50 text-red-700"
-                            : "bg-amber-50 text-amber-700"
-                      }`}
-                    >
-                      {leave.status}
-                    </span>
-                  </td>
-                </tr>
-              ))}
+                <td className="px-5 py-4 text-sm font-semibold">
+                  Rajesh Kumar
+                </td>
+
+                <td className="px-5 py-4 text-sm">HR</td>
+
+                <td className="px-5 py-4">
+                  <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-700">
+                    Present
+                  </span>
+                </td>
+              </tr>
+
+              <tr className="border-t border-slate-100">
+                <td className="px-5 py-4 text-sm text-slate-700">
+                  Employee Added
+                </td>
+
+                <td className="px-5 py-4 text-sm font-semibold">Anil Sharma</td>
+
+                <td className="px-5 py-4 text-sm">Finance</td>
+
+                <td className="px-5 py-4">
+                  <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
+                    Active
+                  </span>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
       </div>
     </div>
   );
-};
-
-export default HRLeaveDashboard;
+}

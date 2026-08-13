@@ -7,16 +7,22 @@ interface LeaveApprovalProps {
 }
 
 const LeaveApproval = ({ leave, onStatusChange }: LeaveApprovalProps) => {
-  if (leave.status !== "Pending") {
-    return <span className="text-sm text-slate-400">—</span>;
-  }
-
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex flex-wrap items-center gap-2">
       <button
         type="button"
         onClick={() => onStatusChange(leave.id, "Approved")}
-        className="rounded-md bg-green-50 px-3 py-1.5 text-xs font-semibold text-green-700 transition hover:bg-green-100"
+        disabled={leave.status === "Approved"}
+        className="
+          rounded-md bg-green-50
+          px-3 py-2
+          text-xs font-semibold
+          text-green-700
+          transition
+          hover:bg-green-100
+          disabled:cursor-not-allowed
+          disabled:opacity-40
+        "
       >
         Approve
       </button>
@@ -24,9 +30,37 @@ const LeaveApproval = ({ leave, onStatusChange }: LeaveApprovalProps) => {
       <button
         type="button"
         onClick={() => onStatusChange(leave.id, "Rejected")}
-        className="rounded-md bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 transition hover:bg-red-100"
+        disabled={leave.status === "Rejected"}
+        className="
+          rounded-md bg-red-50
+          px-3 py-2
+          text-xs font-semibold
+          text-red-700
+          transition
+          hover:bg-red-100
+          disabled:cursor-not-allowed
+          disabled:opacity-40
+        "
       >
         Reject
+      </button>
+
+      <button
+        type="button"
+        onClick={() => onStatusChange(leave.id, "Cancelled")}
+        disabled={leave.status === "Cancelled"}
+        className="
+          rounded-md bg-slate-100
+          px-3 py-2
+          text-xs font-semibold
+          text-slate-600
+          transition
+          hover:bg-slate-200
+          disabled:cursor-not-allowed
+          disabled:opacity-40
+        "
+      >
+        Cancel
       </button>
     </div>
   );

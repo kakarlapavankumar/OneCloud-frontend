@@ -1,99 +1,336 @@
-import LeaveForm from "../../components/leave/LeaveForm";
-import LeaveTable from "../../components/leave/LeaveTable";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  ArrowLeft,
+  CalendarDays,
+  FileText,
+  Send,
+  RotateCcw,
+} from "lucide-react";
 
-import { useLeave } from "../../hooks/useLeave";
+interface LeaveFormData {
+  employeeId: string;
+  employeeName: string;
+  department: string;
+  leaveType: string;
+  fromDate: string;
+  toDate: string;
+  reason: string;
+}
 
-import type { LeaveFormData, LeaveStatus } from "../../types/leave";
+export default function LeaveRequestDashboard() {
+  const navigate = useNavigate();
 
-const LeaveRequestDashboard = () => {
-  const { leaveRequests, addLeaveRequest, updateLeaveStatus } = useLeave();
+  const [formData, setFormData] = useState<LeaveFormData>({
+    employeeId: "",
+    employeeName: "",
+    department: "",
+    leaveType: "",
+    fromDate: "",
+    toDate: "",
+    reason: "",
+  });
 
-  // Current logged-in employee
-  // Replace this later with AuthContext.
-  const currentEmployeeId = "EMP001";
+  const [totalDays, setTotalDays] = useState(0);
+  const [successMessage, setSuccessMessage] = useState("");
 
-  const myLeaves = leaveRequests.filter(
-    (leave) => leave.employeeId === currentEmployeeId,
-  );
+  const calculateDays = (fromDate: string, toDate: string) => {
+    if (!fromDate || !toDate) {
+      setTotalDays(0);
+      return;
+    }
 
-  const handleSubmit = (
-    data: LeaveFormData & {
-      totalDays: number;
-    },
-  ) => {
-    addLeaveRequest({
-      ...data,
-      totalDays: data.totalDays,
-    });
+    const from = new Date(fromDate);
+    const to = new Date(toDate);
+
+    if (to < from) {
+      setTotalDays(0);
+      return;
+    }
+
+    const difference = to.getTime() - from.getTime();
+
+    const days = Math.floor(difference / (1000 * 60 * 60 * 24)) + 1;
+
+    setTotalDays(days);
   };
 
-  const handleStatusChange = (id: string, status: LeaveStatus) => {
-    updateLeaveStatus(id, status);
+  const handleChange = (field: keyof LeaveFormData, value: string) => {
+    const updatedForm = {
+      ...formData,
+      [field]: value,
+    };
+
+    setFormData(updatedForm);
+
+    if (field === "fromDate" || field === "toDate") {
+      calculateDays(updatedForm.fromDate, updatedForm.toDate);
+    }
+  };
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (
+      formData.fromDate &&
+      formData.toDate &&
+      formData.toDate < formData.fromDate
+    ) {
+      return;
+    }
+
+    const existingRequests = JSON.parse(
+      localStorage.getItem("leaveRequests") || "[]",
+    );
+
+    const newRequest = {
+      id: Date.now(),
+      ...formData,
+      totalDays,
+      status: "Pending",
+    };
+
+    localStorage.setItem(
+      "leaveRequests",
+      JSON.stringify([...existingRequests, newRequest]),
+    );
+
+    setSuccessMessage("Leave request submitted successfully.");
+
+    setTimeout(() => {
+      setSuccessMessage("");
+    }, 4000);
+
+    handleReset();
+  };
+
+  const handleReset = () => {
+    setFormData({
+      employeeId: "",
+      employeeName: "",
+      department: "",
+      leaveType: "",
+      fromDate: "",
+      toDate: "",
+      reason: "",
+    });
+
+    setTotalDays(0);
   };
 
   return (
-    <div className="min-h-full bg-slate-50 p-6">
-      <div className="mb-7">
-        <h1 className="text-2xl font-bold text-slate-900">
-          My Leave Dashboard
-        </h1>
+    <div className="min-h-screen bg-slate-50 p-6">
+      {/* HEADER */}
+      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-800">
+            Leave Request Portal
+          </h1>
 
-        <p className="mt-1 text-sm text-slate-500">
-          Apply for leave and track your leave requests.
-        </p>
+          <p className="mt-1 text-sm text-slate-500">
+            Submit a new employee leave request
+          </p>
+        </div>
+
+        {/* BACK TO LEAVE MANAGEMENT */}
+        <button
+          type="button"
+          onClick={() => navigate("/leave")}
+          className="flex w-fit items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md transition hover:bg-blue-700"
+        >
+          <ArrowLeft size={18} />
+          Back to Dashboard
+        </button>
       </div>
 
-      {/* EMPLOYEE SUMMARY */}
+      {/* SUCCESS */}
+      {successMessage && (
+        <div className="mb-5 rounded-xl border border-green-200 bg-green-50 px-5 py-4 text-sm font-semibold text-green-700">
+          {successMessage}
+        </div>
+      )}
 
-      <div className="mb-6 grid grid-cols-1 gap-5 md:grid-cols-3">
-        <div className="rounded-xl border border-blue-200 bg-blue-50 p-5">
-          <p className="text-sm text-blue-700">Total Entitlement</p>
+      {/* FORM */}
+      <div className="mx-auto max-w-5xl rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="mb-7 flex items-center gap-4">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+            <FileText size={24} />
+          </div>
 
-          <p className="mt-2 text-3xl font-bold text-blue-900">20</p>
+          <div>
+            <h2 className="text-lg font-bold text-slate-800">
+              Apply for Leave
+            </h2>
 
-          <p className="text-xs text-blue-600">Days</p>
+            <p className="text-sm text-slate-500">
+              Fill in all required information
+            </p>
+          </div>
         </div>
 
-        <div className="rounded-xl border border-orange-200 bg-orange-50 p-5">
-          <p className="text-sm text-orange-700">Used Leave</p>
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 gap-5 md:grid-cols-2"
+        >
+          {/* EMPLOYEE ID */}
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-slate-700">
+              Employee ID
+            </label>
 
-          <p className="mt-2 text-3xl font-bold text-orange-900">
-            {myLeaves
-              .filter((leave) => leave.status === "Approved")
-              .reduce((sum, leave) => sum + leave.totalDays, 0)}
-          </p>
+            <input
+              type="text"
+              value={formData.employeeId}
+              onChange={(e) => handleChange("employeeId", e.target.value)}
+              placeholder="EMP001"
+              required
+              className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            />
+          </div>
 
-          <p className="text-xs text-orange-600">Days</p>
-        </div>
+          {/* EMPLOYEE NAME */}
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-slate-700">
+              Employee Name
+            </label>
 
-        <div className="rounded-xl border border-green-200 bg-green-50 p-5">
-          <p className="text-sm text-green-700">Remaining</p>
+            <input
+              type="text"
+              value={formData.employeeName}
+              onChange={(e) => handleChange("employeeName", e.target.value)}
+              placeholder="Employee Name"
+              required
+              className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            />
+          </div>
 
-          <p className="mt-2 text-3xl font-bold text-green-900">
-            {20 -
-              myLeaves
-                .filter((leave) => leave.status === "Approved")
-                .reduce((sum, leave) => sum + leave.totalDays, 0)}
-          </p>
+          {/* DEPARTMENT */}
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-slate-700">
+              Department
+            </label>
 
-          <p className="text-xs text-green-600">Days</p>
-        </div>
-      </div>
+            <select
+              value={formData.department}
+              onChange={(e) => handleChange("department", e.target.value)}
+              required
+              className="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            >
+              <option value="">Select Department</option>
 
-      {/* APPLY */}
+              <option value="IT">IT</option>
+              <option value="HR">HR</option>
+              <option value="Finance">Finance</option>
+              <option value="Marketing">Marketing</option>
+              <option value="Operations">Operations</option>
+            </select>
+          </div>
 
-      <LeaveForm onSubmit={handleSubmit} />
+          {/* LEAVE TYPE */}
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-slate-700">
+              Leave Type
+            </label>
 
-      {/* MY REQUESTS */}
+            <select
+              value={formData.leaveType}
+              onChange={(e) => handleChange("leaveType", e.target.value)}
+              required
+              className="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            >
+              <option value="">Select Leave Type</option>
 
-      <div className="mt-6">
-        <LeaveTable
-          leaveRequests={myLeaves}
-          onStatusChange={handleStatusChange}
-        />
+              <option value="Casual Leave">Casual Leave</option>
+
+              <option value="Sick Leave">Sick Leave</option>
+
+              <option value="Earned Leave">Earned Leave</option>
+
+              <option value="Maternity Leave">Maternity Leave</option>
+            </select>
+          </div>
+
+          {/* FROM DATE */}
+          <div>
+            <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700">
+              <CalendarDays size={16} />
+              From Date
+            </label>
+
+            <input
+              type="date"
+              value={formData.fromDate}
+              onChange={(e) => handleChange("fromDate", e.target.value)}
+              required
+              className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            />
+          </div>
+
+          {/* TO DATE */}
+          <div>
+            <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700">
+              <CalendarDays size={16} />
+              To Date
+            </label>
+
+            <input
+              type="date"
+              min={formData.fromDate || undefined}
+              value={formData.toDate}
+              onChange={(e) => handleChange("toDate", e.target.value)}
+              required
+              className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            />
+          </div>
+
+          {/* TOTAL DAYS */}
+          <div className="rounded-xl bg-blue-50 p-4 md:col-span-2">
+            <p className="text-sm font-medium text-blue-600">
+              Total Leave Days
+            </p>
+
+            <p className="mt-1 text-2xl font-bold text-blue-700">
+              {totalDays} {totalDays === 1 ? "Day" : "Days"}
+            </p>
+          </div>
+
+          {/* REASON */}
+          <div className="md:col-span-2">
+            <label className="mb-2 block text-sm font-semibold text-slate-700">
+              Reason
+            </label>
+
+            <textarea
+              rows={5}
+              value={formData.reason}
+              onChange={(e) => handleChange("reason", e.target.value)}
+              placeholder="Enter reason for leave..."
+              required
+              className="w-full resize-none rounded-lg border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            />
+          </div>
+
+          {/* BUTTONS */}
+          <div className="flex gap-3 md:col-span-2">
+            <button
+              type="submit"
+              className="flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
+            >
+              <Send size={17} />
+              Apply Leave
+            </button>
+
+            <button
+              type="button"
+              onClick={handleReset}
+              className="flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-100"
+            >
+              <RotateCcw size={17} />
+              Reset
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
-};
-
-export default LeaveRequestDashboard;
+}
