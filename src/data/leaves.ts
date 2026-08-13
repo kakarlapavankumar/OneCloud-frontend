@@ -1,0 +1,43 @@
+import type { LeaveRequest } from "../types";
+
+export const seedLeaves: LeaveRequest[] = [
+  {
+    id: "LV001",
+    employeeId: "EMP001",
+    employeeName: "Pavan Kumar",
+    department: "Engineering",
+    leaveType: "Casual Leave",
+    fromDate: "2026-08-12",
+    toDate: "2026-08-13",
+    totalDays: 2,
+    reason: "Personal work",
+    status: "Pending",
+    appliedDate: "2026-08-10",
+  },
+  {
+    id: "LV002",
+    employeeId: "EMP002",
+    employeeName: "Rajesh Kumar",
+    department: "Human Resources",
+    leaveType: "Earned Leave",
+    fromDate: "2026-08-18",
+    toDate: "2026-08-20",
+    totalDays: 3,
+    reason: "Family function",
+    status: "Approved",
+    appliedDate: "2026-08-05",
+  },
+  {
+    id: "LV003",
+    employeeId: "EMP006",
+    employeeName: "Sneha Rao",
+    department: "Design",
+    leaveType: "Sick Leave",
+    fromDate: "2026-08-11",
+    toDate: "2026-08-11",
+    totalDays: 1,
+    reason: "Medical appointment",
+    status: "Pending",
+    appliedDate: "2026-08-09",
+  },
+];

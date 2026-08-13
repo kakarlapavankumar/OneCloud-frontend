@@ -1,0 +1,16 @@
+export const ROUTES = {
+  home: "/",
+  login: "/login",
+  register: "/register",
+  dashboard: "/dashboard",
+  employees: "/employees",
+  employeeDetails: "/employees/:id",
+  attendance: "/attendance",
+  leave: "/leave",
+  payroll: "/payroll",
+  crm: "/crm",
+  finance: "/finance",
+  reports: "/reports",
+  settings: "/settings",
+  profile: "/profile",
+} as const;
